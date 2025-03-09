@@ -12,4 +12,4 @@ firebase-admin
 # Other essential libraries
 pillow  # Image handling in Django
 gunicorn  # Production WSGI server
-psycopg2-binary  # PostgreSQL support (if using PostgreSQL)
+#psycopg2-binary  # PostgreSQL support (if using PostgreSQL)
