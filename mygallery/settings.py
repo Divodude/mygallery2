@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%-a0c$-si4i)$)2r@rs!=j3yp)9iyt1^8myb0f=3c)9@y=ok9g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*',"mygallery2-production.up.railway.app"]
 
