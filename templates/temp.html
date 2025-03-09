@@ -1,0 +1,456 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #181818;
+            color: #f0f0f0;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1f1f1f;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+        .sidebar a {
+            color: #f0f0f0;
+            text-decoration: none;
+            font-size: 20px;
+            padding: 10px;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #333;
+        }
+        .gallery {
+            margin-top: 20px;
+        }
+        .gallery img {
+            border-radius: 15px;
+            width: 100%;
+            object-fit: cover;
+            height: 200px;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+        .navbar-toggler {
+            background-color: #f0f0f0;
+            border: none;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 15px;
+        }
+        .upload-icon {
+            font-size: 24px;
+            cursor: pointer;
+            
+        
+           
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        #buttonc{
+            margin-left: 65%;
+        }
+        #uploadModal{
+            border-radius: 35px;
+        }
+        .hover-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hover-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .hover-container:hover img {
+            transform: scale(1.05); /* Optional zoom effect on hover */
+        }
+        
+        .hover-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark transparent background */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .hover-container:hover .hover-caption {
+            opacity: 1;
+        }
+        .like-btn{
+            background-color: transparent; 
+            border-color: transparent;
+        }
+        .like-btn:hover {
+            background-color: #e74c3c; 
+
+        }
+        .btn{
+            background-color: transparent;
+        }
+
+        footer {
+    background-color: #343a40; /* Dark background for footer */
+}
+
+footer .social-links a {
+    font-size: 1.5rem; /* Adjust icon size */
+    color: #fff; /* White color for icons */
+    gap: 15px;
+}
+
+footer .social-links a:hover {
+    
+    color: #adb5bd; /* Light color on hover */
+}
+.social-links a {
+        margin: 0 15px;
+    }
+
+        
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+             
+            <nav class="col-md-2 d-none d-md-block sidebar vh-100 bg-dark position-fixed">
+                <div class="position-sticky overflow-auto h-100">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            
+                            <a class="nav-link active text-white" href="{%  url 'fetch'%}">Photos  </a>
+                            
+
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">Explore</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{%url 'ai_photos'%}">AI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{%url 'album'%}">Clubs</a>
+                        </li>
+                        {% comment %} <li class="nav-item">
+                            <a class="nav-link text-white" href="#">Archive</a>
+                        </li> {% endcomment %}
+                    </ul>
+                </div>
+            </nav>
+            
+
+            <!-- Main Content -->
+             
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                    {%block uploads%}
+                    
+                    {% if request.user.is_authenticated %}
+                    <!-- Upload Icon and User Avatar -->
+                     <head>
+                    <div class="d-flex align-items-center">
+                        <form method="POST" action="{% url 'fetch' %}" id="input" enctype="multipart/form-data" >
+
+                        <input id="search" type="text" class="form-control" placeholder="Search Photos" name="search" >
+             
+                        </form>
+                        </div>
+                    
+                        
+                    
+
+
+                        <button type="button" class="btn btn-dark" data-bs-toggle="modal" id="buttonc"data-bs-target="#uploadModal">
+                            Upload
+                        </button>
+                
+                        <!-- Modal -->
+                        <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content bg-dark text-white">
+                                    <!-- Dark Modal Header -->
+                                    <div class="modal-header border-secondary">
+                                        
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                        
+                                    <!-- Dark Modal Body -->
+                                     <form method="POST" action="{% url 'fetch' %}" id="input" enctype="multipart/form-data" >
+                                        {% csrf_token%}
+                                    <div class="modal-body">
+                                        <!-- Dropdown or File Select Option -->
+                                        <div class="mb-3">
+                                            <!-- Dropdown Section -->
+                                            <div class="p-3 bg-dark text-white rounded border-secondary">
+                                                <label for="fileSelect" class="form-label">Choose an club:</label>
+                                                <select class="form-select mb-3 bg-dark text-white border-secondary" id="fileSelect" name="album">
+                                                    <option selected> Clubs</option>
+                                                    <option value="Aavesh">Aavesh</option>
+                                                    <option value="Zenith">Zenith</option>
+                                                    <option value="Picxel">Picxel</option>
+                                                    <option value="Force">Force</option>
+                                                    <option value="EIC">EIC</option>
+                                                    <option value="Ecova">Ecova</option>
+                                                </select>
+                                            </div>
+                                    
+                                            <!-- Text Input Section -->
+                                            <div class="mb-3 p-3 bg-dark text-white rounded border-secondary">
+                                                <label for="textInput" class="form-label">Enter the name </label>
+                                                <input type="text" name="name" class="form-control bg-dark text-white border-secondary" id="textInput" placeholder="Enter name">
+                                            </div>
+                                        
+                                            <!-- Image Preview Section -->
+                                            <div class="mb-3 p-3 bg-dark text-white rounded border-secondary">
+                                                <label for="formFile" class="form-label">Upload file:</label>
+                                                <input class="form-control bg-dark text-white border-secondary" name="image" type="file" id="formFile" onchange="previewImage(event)">
+                                            </div>
+                                    
+                                            <!-- Placeholder for image preview -->
+                                            <div class="text-center mt-3">
+                                                <img id="imagePreview" class="img-fluid rounded border-secondary" src="#" alt="Selected Image" style="max-height: 200px; display:none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                        
+                                    <!-- Dark Modal Footer -->
+                                    <div class="modal-footer border-secondary">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                     
+                        <img src="{{ user.profile.avater.url }}" class="user-avatar" alt="User Avatar" id = "avatar">
+                        
+                        {% endif %}
+                       
+
+                    
+                </div></head>
+                {% endblock%}
+
+                <!-- Gallery Grid -->
+                <div class="row gallery">
+                    <h1>Clubs</h1>
+                    <div class="row flex-row flex-nowrap overflow-auto hide-scrollbar">
+                        {% for i in events %}
+                        <div class="col-md-3 mb-4">
+                            <div class="hover-container">
+                                <a href="{% url 'album'%}?value={{i}}">
+                                    <img src="https://iiituna.s3.eu-north-1.amazonaws.com/uploads/clubs/Logo-1723633248449-405084687.png" alt="Sunset" class="img-fluid">
+                                    <div class="hover-caption">
+                                        <h5>{{ i}}</h5>
+                                        
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                {% block Photos %}
+    <!-- Dynamic Gallery -->
+    <div class="row gallery">
+        <h2> Gallery</h2>
+        {% for i in data %}
+        
+        <div class="col-md-4 mb-4">
+            <!-- Each image will have a click event to open a modal with the carousel -->
+            
+            <img src="{{i.images.url}}" alt="Image"  data-bs-toggle="modal" data-bs-target="#imageModal" data-index="{{ forloop.counter }}" class="gallery-img">
+            
+            
+        
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Modal for Image Slider with Captions -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #333; ">
+                <!-- <div class="modal-header">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                
+                <div class="modal-body p-0">
+                    <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for i in data %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter }}">
+                               
+                                <img src="{{i.images.url}}" class="d-block w-100" alt="Image">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5> {{ i.name }}</h5>
+                                    <p> {{ i.event }}.</p>
+                                    
+
+
+                                    <button type="submit" id="like" name="like" class="btn btn-dark like-btn" data-id="{{ i.id }} " >
+                                        
+                                        <i class="bi bi-heart"></i>
+                                        
+                                    </button>
+        
+                                    <p>{{i.likes}}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Carousel Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+                
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal for Image Preview -->
+    
+
+    <!-- Hamburger Menu -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+       
+    </script>
+    <script>
+      
+        document.getElementById("like").addEventListener('click', like_submit);
+
+let liked = false; // Use 'liked' instead of 'like' to avoid confusion with the function name
+
+function like_submit() {
+    liked = !liked;
+
+    
+    const likeButton = document.getElementById("like");
+    if (liked) {
+        likeButton.textContent = "Unlike"; 
+        likeButton.style.backgroundColor = "red"; 
+    } else {
+        likeButton.textContent = "Like"; 
+        likeButton.style.backgroundColor = ""; 
+    }
+
+    console.log(liked ? "Liked" : "Unliked"); 
+}
+
+// Image preview logic
+function previewImage(event) {
+    var output = document.getElementById('imagePreview');
+    if (event.target.files && event.target.files[0]) {
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.style.display = "block"; 
+        output.onload = function() {
+            URL.revokeObjectURL(output.src);
+        };
+    }
+}
+            
+            
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('imageModal');
+            modal.addEventListener('show.bs.modal', function (event) {
+                // Get the clicked image
+                var button = event.relatedTarget; 
+                var index = button.getAttribute('data-index'); // Get the data-index attribute
+                
+                // Get the carousel
+                var carousel = document.getElementById('imageCarousel');
+                
+                // Find the carousel item with the matching index
+                var items = carousel.querySelectorAll('.carousel-item');
+                items.forEach(function(item) {
+                    if (item.getAttribute('data-index') == index) {
+                        var carouselInstance = new bootstrap.Carousel(carousel);
+                        carouselInstance.to(Array.prototype.indexOf.call(items, item));
+                    }
+                });
+            });
+        });
+        </script>
+    {% comment %} <script>
+        document.getElementById('input').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+        });
+    </script>  {% endcomment %}
+    
+</body>
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+        <p class="mb-1">&copy; 2024 Your Company. All rights reserved.</p>
+        <div class="social-links" >
+            <a href="https://github.com/Divodude" target="_blank" class="text-white">
+                <i class="bi bi-github"></i>
+            </a>
+            <a href="https://www.instagram.com/divyansh_279/" target="_blank" class="text-white">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/divyansh-yadav-15618626b/" target="_blank" class="text-white">
+            <i class="bi bi-linkedin"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<!-- Add Bootstrap Icons CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+</html>

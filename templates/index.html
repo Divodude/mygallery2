@@ -1,0 +1,1022 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelVault - Photo Gallery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00cec9;
+            --dark-color: #1e1e2c;
+            --darker-color: #13131d;
+            --light-color: #f5f6fa;
+            --gray-color: #dfe6e9;
+        }
+        
+        body {
+            background-color: var(--darker-color);
+            color: var(--light-color);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(to bottom, var(--dark-color), var(--darker-color));
+            padding-top: 30px;
+            overflow-y: auto;
+            position: fixed;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        .sidebar .nav-link {
+            color: var(--gray-color);
+            font-size: 16px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .sidebar .nav-link:hover, 
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-brand {
+            height: 50px;
+            width: 50px;
+            background:white;
+            padding:15px 1px;
+            margin-bottom: 20px;
+            
+            display: flex;
+            align-items: center;
+            border-radius: 100%;
+        }
+        
+        .sidebar-brand img {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .sidebar-brand span {
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+            color: white;
+        }
+        
+        /* Main content styling */
+        main {
+            padding-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .search-container input {
+            background-color: var(--dark-color);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 20px 15px 50px;
+            width: 100%;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .search-container input:focus {
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            background-color: rgba(30, 30, 44, 0.8);
+            color: white;
+
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+            
+        }
+        
+        /* User profile section */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 50px;
+            background-color: var(--dark-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .user-profile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .user-info {
+            margin-left: 10px;
+            display: none;
+        }
+        
+        .user-info span {
+            display: block;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+        
+        /* Upload button */
+        .upload-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .upload-btn i {
+            margin-right: 8px;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.5);
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        }
+        
+        /* Gallery */
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        .gallery {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .image-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .image-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .image-card:hover img {
+            transform: scale(1.08);
+        }
+        
+        .image-card .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .image-card:hover .card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .image-card .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .image-card .card-info {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .image-card .card-info span {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .image-card .card-info i {
+            margin-right: 5px;
+            font-size: 14px;
+        }
+        
+        .card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .image-card:hover .card-actions {
+            opacity: 1;
+        }
+        
+        .card-actions button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .card-actions button:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Club cards */
+        .club-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%; /* Make the card circular */
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            width: 250px; /* Set equal width and height for a perfect circle */
+            height: 250px;
+        }
+        
+        .club-card img {
+            background: white;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            border-radius: 50%; /* Ensure the image is circular */
+        }
+        
+        .club-card:hover img {
+            transform: scale(1.08);
+        }
+        
+        .club-card .club-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            border-radius: 50%; /* Ensure the overlay is circular */
+        }
+        
+        .club-card:hover .club-overlay {
+            opacity: 1;
+        }
+        
+        .club-card .club-name {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 25px; /* Slightly rounded corners for the text box */
+            background: rgba(108, 92, 231, 0.8);
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+        
+        .club-card:hover .club-name {
+            transform: translateY(0);
+        }
+        
+        /* Modal styling */
+        .modal-content {
+            background-color: var(--dark-color);
+            border-radius: 15px;
+            border: none;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+        }
+        
+        .form-control, .form-select {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+        }
+        
+        .form-label {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        
+        /* Image viewer modal */
+        #imageModal .modal-dialog {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        
+        #imageModal .modal-content {
+            background-color: transparent;
+            box-shadow: none;
+        }
+        
+        .carousel-item img {
+            border-radius: 15px;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .carousel-caption {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            padding: 20px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            text-align: left;
+        }
+        
+        .carousel-control-prev, .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0 10px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        footer .social-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        footer .social-links a {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        footer .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        /* Stats cards */
+        .stats-card {
+            background: linear-gradient(45deg, rgba(30, 30, 44, 0.8), rgba(19, 19, 29, 0.8));
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stats-label {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 992px) {
+            .user-info {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding-top: 20px;
+            }
+            
+            .sidebar .nav-link span,
+            .sidebar-brand span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                padding: 12px;
+                justify-content: center;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .sidebar-brand {
+                justify-content: center;
+                padding: 10px;
+            }
+            
+            main {
+                margin-left: 70px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .image-card img {
+                height: 220px;
+            }
+        }
+        
+        /* Additional animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        /* Default button style */
+.like-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: black; /* Default color */
+    transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+
+.like-btn.liked {
+    
+    color: red; 
+}
+        
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+          
+            <nav class="col-md-2 d-none d-md-block sidebar">
+                <div class="sidebar-brand">
+                    <img src="https://cdn.iiitu.ac.in/uploads/clubs/picxcel1726210189556-785072670.webp" alt="Logo">
+                    <span>PixelVault</span>
+                </div>
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'fetch' %}">
+                                <i class="bi bi-grid-3x3"></i>
+                                <span>Gallery</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-compass"></i>
+                                <span>Explore</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ai_photos' %}">
+                                <i class="bi bi-stars"></i>
+                                <span>AI Gallery</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'album' %}">
+                                <i class="bi bi-people"></i>
+                                <span>Clubs</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-bookmark"></i>
+                                <span>Favorites</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Events</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mt-5">
+                            <a class="nav-link" href="{%url 'generate'%}">
+                                <i class="bi bi-gear"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-question-circle"></i>
+                                <span>Help</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <!-- Main Content -->
+            {%block 'ai'%}
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+                {% block uploads %}
+                {% if request.user.is_authenticated %}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="search-container animate-fadeInUp delay-1" style="max-width: 500px;">
+                        <form method="POST" action="{% url 'fetch' %}" id="search-form">
+                            <i class="bi bi-search"></i>
+                            <input type="text" class="form-control" placeholder="Search photos, clubs, or events..." name="search">
+                        </form>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="upload-btn me-3 animate-fadeInUp delay-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="bi bi-cloud-arrow-up"></i> Upload
+                        </button>
+                        
+                        <div class="user-profile animate-fadeInUp delay-3">
+                            <img src="{{ user.profile.avater.url }}" class="user-avatar" alt="User Avatar" id="avatar">
+                            <div class="user-info">
+                                <span class="user-name">{{ user.username }}</span>
+                                <span class="user-role">Member</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Overview Section -->
+                <div class="row mb-4 animate-fadeInUp delay-2">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-icon">
+                                <i class="bi bi-image"></i>
+                            </div>
+                            <div class="stats-value">{{total_photos}}</div>
+                            <div class="stats-label">Total Photos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-icon">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <div class="stats-value">{{total_likes}}</div>
+                            <div class="stats-label">Total Likes</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="stats-value">6</div>
+                            <div class="stats-label">Active Clubs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div class="stats-value">12</div>
+                            <div class="stats-label">Recent Events</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upload Modal -->
+                <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="uploadModalLabel">Upload New Photo</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <form method="POST" action="{% url 'fetch' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="fileSelect" class="form-label">Select Club</label>
+                                        <select class="form-select" id="fileSelect" name="album">
+                                            <option selected disabled>Choose a club</option>
+                                            <option value="Aavesh">Aavesh</option>
+                                            <option value="Zenith">Zenith</option>
+                                            <option value="Picxel">Picxel</option>
+                                            <option value="Force">Force</option>
+                                            <option value="EIC">EIC</option>
+                                            <option value="Ecova">Ecova</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="textInput" class="form-label">Photo Title</label>
+                                        <input type="text" name="name" class="form-control" id="textInput" placeholder="Enter a title for your photo">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="eventInput" class="form-label">Event (Optional)</label>
+                                        <input type="text" name="event" class="form-control" id="eventInput" placeholder="Enter event name">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="formFile" class="form-label">Choose Photo</label>
+                                        <input class="form-control" name="image" type="file" id="formFile"multiple onchange="previewImage(event)">
+                                    </div>
+                                    
+                                    <div class="text-center mt-3">
+                                        <img id="imagePreview" class="img-fluid rounded" src="#" alt="Selected Image" style="max-height: 200px; display:none">
+                                    </div>
+                                </div>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Upload Photo</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endblock %}
+ 
+                <!-- Clubs Section -->
+                <div class="row gallery animate-fadeInUp delay-2">
+                    <h2 class="section-title">Clubs</h2>
+                    <div class="row flex-row flex-nowrap overflow-auto hide-scrollbar pb-2"  style="scrollbar-width: none; -ms-overflow-style: none;">
+                        {% for i in clubs %}
+                        <div class="col-md-3 col-6">
+                            <div class="club-card">
+                                <img src="{{i.image.url}}" alt="{{ i.club_name }}" class="img-fluid">
+                                <div class="club-overlay">
+                                    <a href="{% url 'album' %}?value={{ i.club_name }}" class="text-decoration-none text-white">
+                                        <div class="club-name">{{ i.club_name }}</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                {%block aip%}
+
+                <!-- Gallery Section -->
+                <div class="row gallery">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="section-title animate-fadeInUp">Photo Gallery</h2>
+                        
+                    </div>
+                    
+                    <div class="row">
+                        {% block Photos %}
+                        {% for i in data %}
+                        <div class="col-lg-4 col-md-6 mb-4 animate-fadeInUp">
+                            <div class="image-card">
+                                <img src="{{ i.images.url }}" alt="Image" data-bs-toggle="modal" data-bs-target="#imageModal" data-index="{{ forloop.counter }}">
+                                <div class="card-overlay">
+                                    <h5 class="card-title">{{ i.name }}</h5>
+                                    <div class="card-info">
+                                        <span>
+                                            <i class="bi bi-calendar3"></i> {{ i.event }}
+                                        </span>
+                                        <span>
+                                            <i class="bi bi-heart"></i> {{ i.likes }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <button type="button" class="like-btn" data-id="{{ i.id }}">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                    <button type="button" class="share-btn" data-url="{{ i.images.url }}">
+                                        <i class="bi bi-share"></i>
+                                    </button>
+                                    
+                                    <button type="button" class="download-btn" data-url="{{ i.images.url }}">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endblock %}
+                    </div>
+                    
+                    
+                    <!-- Load More Button -->
+                    <div class="text-center mt-4 mb-5">
+                        <button class="btn btn-outline-primary px-4 py-2">
+                            <i class="bi bi-arrow-down-circle me-2"></i> Load More
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Image Modal -->
+                <!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0">
+                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for i in data %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter }}">
+                            <img src="{{ i.images.url }}" class="d-block w-100 rounded" alt="Image">
+                            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 p-4 rounded-bottom">
+                                <h5>{{ i.name }}</h5>
+                                <p>{{ i.event }}</p>
+                                <div class="d-flex justify-content-start gap-3">
+                                    
+                                    
+
+                                  
+
+
+                                    
+                                   
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{%endblock%}
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+        <p class="mb-2">&copy; 2024 PixelVault. All rights reserved.</p>
+        <div class="social-links">
+            <a href="https://github.com/Divodude" target="_blank" class="text-white">
+                <i class="bi bi-github"></i>
+            </a>
+            <a href="https://www.instagram.com/divyansh_279/" target="_blank" class="text-white">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/divyansh-yadav-15618626b/" target="_blank" class="text-white">
+                <i class="bi bi-linkedin"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Image Preview Function
+    function previewImage(event) {
+        const output = document.getElementById('imagePreview');
+        if (event.target.files && event.target.files[0]) {
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.style.display = "block";
+            output.onload = () => URL.revokeObjectURL(output.src);
+        }
+    }
+
+
+
+    // Initialize Carousel
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('imageModal');
+        modal.addEventListener('show.bs.modal', (event) => {
+            const button = event.relatedTarget;
+            const index = button.getAttribute('data-index');
+            const carousel = document.getElementById('imageCarousel');
+            const items = carousel.querySelectorAll('.carousel-item');
+            items.forEach((item, i) => {
+                if (item.getAttribute('data-index') === index) {
+                    new bootstrap.Carousel(carousel).to(i);
+                }
+            });
+        });
+    });
+   
+        document.querySelectorAll('.download-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const imageUrl = this.getAttribute('data-url');
+        
+                // Create a temporary anchor element to trigger the download
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = 'image.jpg'; // You can customize the filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+        document.querySelectorAll('.share-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const imageUrl = this.getAttribute('data-url');
+        
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Check out this image!',
+                        url: imageUrl,
+                    })
+                    .then(() => console.log('Shared successfully'))
+                    .catch(error => console.error('Error sharing:', error));
+                } else {
+                    alert('Sharing is not supported in your browser.');
+                }
+            });
+        });
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent form submission or page reload
+        
+                const imageId = this.getAttribute('data-id');
+        
+                fetch('/fetch/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded', // Use form data encoding
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: `imageId=${imageId}` // Send imageId as form data
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the like count in the UI
+                        const likeCountElement = this.closest('.image-card').querySelector('.bi-heart').nextSibling;
+                        likeCountElement.textContent = data.likes;
+        
+                        // Toggle the like button appearance
+                        const likeButton = this;
+                        if (data.liked) {
+                            likeButton.classList.add('liked'); // Add the 'liked' class
+                        } else {
+                            likeButton.classList.remove('liked'); // Remove the 'liked' class
+                        }
+                    } else {
+                        console.error('Error:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+</script>
+</body>
+</html>

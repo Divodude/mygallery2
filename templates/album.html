@@ -1,0 +1,62 @@
+
+{% extends "index.html" %}
+{% load static %}
+
+{% block Photos %}
+<h2> Gallery</h2>
+<div class="row gallery">
+    {% for i in alb_img %}
+    <div class="col-md-4 mb-4">
+        <img src="{{i.images.url}}" alt="Image" class="img-fluid"  data-bs-toggle="modal" data-bs-target="#imageModal" data-index="{{ forloop.counter }}" class="gallery-img">
+    </div>
+    {% endfor %}
+</div>
+
+
+    
+    <!-- Modal for Image Slider with Captions -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #333; ">
+                <!-- <div class="modal-header">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                
+                <div class="modal-body p-0">
+                    <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for i in alb_img %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter }}">
+                               
+                                <img src="{{i.images.url}}" class="d-block w-100" alt="Image">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5> {{ i.name }}</h5>
+                                    <p> {{ i.event }}.</p>
+                                    
+                                    <button type="submit" class="btn btn-dark like-btn" data-id="{{ i.id }}">
+                                        
+                                        <i class="bi bi-heart"></i>
+                                        
+                                    </button>
+                                    <p>{{i.likes}}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Carousel Controls -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

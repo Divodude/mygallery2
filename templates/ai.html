@@ -1,0 +1,353 @@
+{%extends 'index.html'%}
+{%block aip%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thi is </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00cec9;
+            --dark-color: #1e1e2c;
+            --darker-color: #13131d;
+            --light-color: #f5f6fa;
+            --gray-color: #dfe6e9;
+        }
+
+        body {
+            background-color: var(--darker-color);
+            color: var(--light-color);
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--dark-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .nav-link {
+            color: var(--gray-color);
+            font-size: 16px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            margin-top: 20px;
+        }
+
+        .image-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .image-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover .card-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-info {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-info i {
+            margin-right: 5px;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .card-actions button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .card-actions button:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        /* Image Modal */
+        .modal-content {
+            background-color: var(--dark-color);
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .carousel-item img {
+            border-radius: 15px;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        .carousel-caption {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            padding: 20px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            text-align: left;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+
+    {% comment "" %}
+    <nav class="sidebar">
+        
+        <ul class="nav flex-column">
+            <h1>{{request.user.username}} </h1>
+            <li class="nav-item">
+               
+                <a class="nav-link active" href="{% url 'fetch' %}">
+                    <i class="bi bi-grid-3x3"></i>
+                    <span>Gallery</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-compass"></i>
+                    <span>Explore</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'ai_photos' %}">
+                    <i class="bi bi-stars"></i>
+                    <span>AI Gallery</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'album' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Clubs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-bookmark"></i>
+                    <span>Favorites</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Events</span>
+                </a>
+            </li>
+            <li class="nav-item mt-5">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endcomment %}
+    <!-- Main Content -->
+                   <!-- Gallery Section -->
+                   <div class="row gallery">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="section-title animate-fadeInUp">Photo Gallery</h2>
+                        
+                    </div>
+                    
+                    <div class="row">
+                        {% for i in urls %}
+                        <div class="col-lg-4 col-md-6 mb-4 animate-fadeInUp">
+                            <div class="image-card">
+                                <img src="{{ i }}" alt="Image" data-bs-toggle="modal" data-bs-target="#imageModal" data-index="{{ forloop.counter }}">
+                               
+                               
+                            </div>
+                        </div>
+                        {% endfor %}
+                       
+                    </div>
+                    <div class="text-center mt-4 mb-5">
+                        <button class="btn btn-outline-primary px-4 py-2">
+                            <i class="bi bi-arrow-down-circle me-2"></i> Load More
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Image Modal -->
+                <!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0">
+                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for i in urls %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter }}">
+                            <img src="{{ i }}" class="d-block w-100 rounded" alt="Image">
+                            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 p-4 rounded-bottom">
+                                <h5>{{ i.name }}</h5>
+                                <p>{{ i.event }}</p>
+                                <div class="d-flex justify-content-start gap-3">
+                                    
+                                    
+
+                                  
+
+
+                                    
+                                   
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -1,0 +1,223 @@
+{%extends 'index.html'%}
+{% load static %}3
+{%block 'ai'%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Your Data </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #00cec9;
+            --dark-color: #1e1e2c;
+            --darker-color: #13131d;
+            --light-color: #f5f6fa;
+            --gray-color: #dfe6e9;
+        }
+
+        body {
+            background-color: var(--darker-color);
+            color: var(--light-color);
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--dark-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .nav-link {
+            color: var(--gray-color);
+            font-size: 16px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        /* Upload Container */
+        .upload-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--dark-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--light-color);
+        }
+
+        .upload-container .form-label {
+            font-weight: 500;
+            color: var(--light-color);
+        }
+
+        .upload-container .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--light-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+            border: none;
+            color: var(--light-color);
+        }
+
+        .upload-container .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 500;
+            color: var(--light-color);
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        /* Image Preview Section */
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+   
+    <!-- Main Content -->
+    
+        <div class="upload-container">
+            <h2>Upload Your 5 Images</h2>
+            <form method="POST" action="{% url 'generate' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="image1" class="form-label">Image 1</label>
+                    <input type="file" class="form-control" id="image1" name="image1" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image2" class="form-label">Image 2</label>
+                    <input type="file" class="form-control" id="image2" name="image2" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image3" class="form-label">Image 3</label>
+                    <input type="file" class="form-control" id="image3" name="image3" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image4" class="form-label">Image 4</label>
+                    <input type="file" class="form-control" id="image4" name="image4" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image5" class="form-label">Image 5</label>
+                    <input type="file" class="form-control" id="image5" name="image5" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate</button>
+            </form>
+
+            <!-- Image Preview Section -->
+            <div class="image-preview">
+                <img id="preview1" src="#" alt="Preview 1" style="display:none;">
+                <img id="preview2" src="#" alt="Preview 2" style="display:none;">
+                <img id="preview3" src="#" alt="Preview 3" style="display:none;">
+                <img id="preview4" src="#" alt="Preview 4" style="display:none;">
+                <img id="preview5" src="#" alt="Preview 5" style="display:none;">
+            </div>
+        </div>
+    </main>
+
+    <!-- Script for Image Preview -->
+    <script>
+        function previewImage(event, previewId) {
+            const reader = new FileReader();
+            const preview = document.getElementById(previewId);
+            reader.onload = function() {
+                preview.src = reader.result;
+                preview.style.display = "block";
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        document.getElementById('image1').addEventListener('change', function(event) {
+            previewImage(event, 'preview1');
+        });
+        document.getElementById('image2').addEventListener('change', function(event) {
+            previewImage(event, 'preview2');
+        });
+        document.getElementById('image3').addEventListener('change', function(event) {
+            previewImage(event, 'preview3');
+        });
+        document.getElementById('image4').addEventListener('change', function(event) {
+            previewImage(event, 'preview4');
+        });
+        document.getElementById('image5').addEventListener('change', function(event) {
+            previewImage(event, 'preview5');
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{%endblock%}
