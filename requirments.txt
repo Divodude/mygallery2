@@ -1,7 +1,7 @@
 # Django and REST Framework
 Django>=4.0,<5.0
 djangorestframework
-opencv-python
+#opencv-python
 
 # Machine Learning & Image Processing
 
