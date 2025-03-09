@@ -1,0 +1,14 @@
+# Django and REST Framework
+Django>=4.0,<5.0
+djangorestframework
+
+# Machine Learning & Image Processing
+
+
+# Firebase (for authentication/storage)
+firebase-admin
+
+# Other essential libraries
+pillow  # Image handling in Django
+gunicorn  # Production WSGI server
+psycopg2-binary  # PostgreSQL support (if using PostgreSQL)
