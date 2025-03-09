@@ -8,17 +8,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variable to force TensorFlow to use CPU
-ENV CUDA_VISIBLE_DEVICES=-1
+
 
 # Set working directory
 WORKDIR /app
 
 # Copy requirements and install dependencies
 COPY requirements.txt . 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirments.txt
 
-# Uninstall GPU TensorFlow (if installed) and install CPU-only version
-RUN pip uninstall -y tensorflow && pip install tensorflow-cpu
+
 
 # Copy the application code
 COPY . .
