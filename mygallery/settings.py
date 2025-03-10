@@ -141,8 +141,10 @@ LOGIN_URL="auth/"
 #from firebase_admin import credentials, storage
 
 # Initialize Firebase Admin
-#CSRF_TRUSTED_ORIGINS = ["https://mygallery2-production.up.railway.app/"]
-CSRF_COOKIE_SECURE = False
+CSRF_TRUSTED_ORIGINS = ["https://mygallery2-production.up.railway.app"]
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 """# Initialize Firebase Admin
 cred = credentials.Certificate(r"foto\face-recognition-3ba91-firebase-adminsdk-oxih3-fb8827bdc6.json")
