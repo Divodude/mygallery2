@@ -14,7 +14,7 @@ from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 def home(request):
-    return redirect("auth")
+    return redirect("fetch")
 
 
 
@@ -37,7 +37,7 @@ from .models import dataset  # Import your model
 from django.db.models import Sum 
 
 @csrf_exempt
-@login_required(login_url="auth")
+#@login_required(login_url="auth")
 def fetch(request):
     if request.method == "POST":
         # Handle like button click
